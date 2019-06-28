@@ -4,7 +4,7 @@ use proc_macro_hack::proc_macro_hack;
 
 use std::{borrow::Borrow, fmt, slice, str};
 
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FourCharCode(pub u32);
 
 impl FourCharCode {
