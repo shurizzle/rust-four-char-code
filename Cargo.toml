@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "four-char-code-macros-impl",
+    "four-char-code"
+]
