@@ -4,7 +4,7 @@ description = "Type a string of 4 chars represented by an u32 type"
 homepage = "https://github.com/shurizzle/rust-four-char-code"
 repository = "https://github.com/shurizzle/rust-four-char-code"
 license-file = "../LICENSE"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Domenico Shura <shura1991@gmail.com>"]
 edition = "2018"
 
@@ -13,4 +13,4 @@ proc-macro-hack = "0.5"
 
 [dependencies.four-char-code-macros-impl]
 path = "../four-char-code-macros-impl"
-version = "0.0.1"
+version = "0.0.2"
