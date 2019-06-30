@@ -8,6 +8,26 @@ use quote::quote;
 use syn::{parse_macro_input, LitStr};
 
 #[inline]
+fn is_normalized(value: u32) -> bool {
+    value & 0xFF != 0
+}
+
+#[inline]
+fn normalize(value: u32) -> u32 {
+    if is_normalized(value) {
+        value
+    } else {
+        let mut res = value | 0x20;
+        for i in 1..4 {
+            if res & (0xFF << i) != 0 {
+                res |= 0x20 << (i * 8);
+            }
+        }
+        res
+    }
+}
+
+#[inline]
 fn str_to_u32(value: &str) -> u32 {
     if value.len() != 4 {
         panic!("{} is not a valid four char code", value);
@@ -21,7 +41,7 @@ fn str_to_u32(value: &str) -> u32 {
             std::mem::size_of::<u8>() * 4,
         );
     }
-    u32::from_be(res)
+    normalize(u32::from_be(res))
 }
 
 #[proc_macro_hack]
