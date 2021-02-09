@@ -24,7 +24,7 @@ fn normalize(value: u32) -> u32 {
     }
 }
 
-#[derive(Copy, Eq)]
+#[derive(Default, Copy, Eq)]
 #[repr(C)]
 pub struct FourCharCode(pub u32);
 
@@ -104,7 +104,7 @@ impl From<String> for FourCharCode {
     }
 }
 
-impl From<&str> for FourCharCode where {
+impl From<&str> for FourCharCode {
     fn from(value: &str) -> FourCharCode {
         if value.len() != 4 {
             panic!("{} is not a valid four char code", value);
