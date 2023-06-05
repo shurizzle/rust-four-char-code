@@ -340,3 +340,26 @@ macro_rules! fcc_format {
         $crate::__private::fcc_format(core::format_args!($fmt, $($args)*))
     };
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const HEX: FourCharCode = four_char_code!("hex_");
+
+    #[test]
+    fn invalid() {
+        assert!(FourCharCode::new(1).is_err());
+        assert!(FourCharCode::from_str("").is_err());
+        assert!(FourCharCode::from_str("test1").is_err());
+        assert!(FourCharCode::from_str("\x7f___").is_err());
+    }
+
+    #[test]
+    fn valid() {
+        assert_eq!(HEX, "hex_");
+        let ui32 = FourCharCode::from_str("ui32");
+        assert!(ui32.is_ok());
+        assert_eq!(ui32.unwrap(), "ui32");
+    }
+}
