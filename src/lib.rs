@@ -4,8 +4,7 @@
 extern crate four_char_code_macros_impl;
 extern crate proc_macro_hack;
 
-use core::fmt;
-use std::cmp::Ordering;
+use core::{cmp::Ordering, fmt};
 
 #[cfg(feature = "std")]
 use std::string::{String, ToString};
