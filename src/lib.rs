@@ -1,0 +1,254 @@
+#![cfg_attr(not(feature = "std"), no_std)]
+#![allow(non_camel_case_types)]
+
+extern crate four_char_code_macros_impl;
+extern crate proc_macro_hack;
+
+use core::fmt;
+use std::cmp::Ordering;
+
+#[cfg(feature = "std")]
+use std::string::{String, ToString};
+
+/// An enum representing a conversion (eg. string->fcc or format->fcc) error
+#[derive(Debug, Clone, Copy)]
+pub enum FccConversionError {
+    /// Given string is > 4 bytes
+    TooLong,
+    /// Given string is < 4 bytes
+    TooShort,
+    /// Given string contains a non printable ascii char
+    InvalidChar,
+}
+
+type Result<T> = core::result::Result<T, FccConversionError>;
+
+/// The main structure, actually a u32.
+#[repr(transparent)]
+#[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
+pub struct FourCharCode(u32);
+
+fn from_bytes(mut bytes: [u8; 4]) -> Result<FourCharCode> {
+    let mut null_streak = true;
+
+    let mut i = 3usize;
+    loop {
+        let mut c = bytes[i];
+        if c == 0 {
+            if null_streak {
+                c = 0x20;
+                bytes[i] = c;
+            } else {
+                return Err(FccConversionError::InvalidChar);
+            }
+        } else {
+            null_streak = false;
+        }
+
+        if c <= b'\x1f' || c >= 127 {
+            return Err(FccConversionError::InvalidChar);
+        }
+
+        if i == 0 {
+            break;
+        }
+        i -= 1;
+    }
+
+    Ok(FourCharCode(u32::from_be_bytes(bytes)))
+}
+
+impl FourCharCode {
+    /// Returns a [FourCharCode] if value is valid, an error describing the problem otherwise.
+    #[inline]
+    pub fn new(value: u32) -> Result<Self> {
+        from_bytes(u32::to_be_bytes(value))
+    }
+
+    /// Returns a [FourCharCode] containing the given value.
+    /// # Safety
+    /// Passing an invalid value can cause a panic
+    #[inline]
+    pub const unsafe fn new_unchecked(value: u32) -> Self {
+        Self(value)
+    }
+
+    /// Returns a [FourCharCode] if values are valid, an error describing the problem otherwise.
+    #[inline]
+    pub fn from_array(value: [u8; 4]) -> Result<Self> {
+        from_bytes(value)
+    }
+
+    /// Returns a [FourCharCode] if slice is valid, an error describing the problem otherwise.
+    pub fn from_slice(value: &[u8]) -> Result<Self> {
+        match value.len().cmp(&4) {
+            Ordering::Less => return Err(FccConversionError::TooShort),
+            Ordering::Greater => return Err(FccConversionError::TooLong),
+            _ => (),
+        }
+
+        from_bytes(unsafe {
+            [
+                *value.get_unchecked(0),
+                *value.get_unchecked(1),
+                *value.get_unchecked(2),
+                *value.get_unchecked(3),
+            ]
+        })
+    }
+
+    /// Returns a [FourCharCode] if string is valid, an error describing the problem otherwise.
+    #[allow(clippy::should_implement_trait)]
+    pub fn from_str(value: &str) -> Result<Self> {
+        Self::from_slice(value.as_bytes())
+    }
+}
+
+impl PartialEq<u32> for FourCharCode {
+    #[inline]
+    fn eq(&self, other: &u32) -> bool {
+        self.0.eq(other)
+    }
+}
+
+impl PartialOrd<u32> for FourCharCode {
+    #[inline]
+    fn partial_cmp(&self, other: &u32) -> Option<Ordering> {
+        self.0.partial_cmp(other)
+    }
+}
+
+impl fmt::Debug for FourCharCode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let be = self.0.to_be_bytes();
+        f.debug_tuple("FourCharCode")
+            .field(&unsafe { core::str::from_utf8_unchecked(&be[..]) })
+            .finish()
+    }
+}
+
+#[cfg(feature = "std")]
+impl ToString for FourCharCode {
+    #[inline]
+    fn to_string(&self) -> String {
+        let bytes = self.0.to_be_bytes();
+        unsafe { core::str::from_utf8_unchecked(&bytes[..]) }.to_string()
+    }
+}
+
+impl From<FourCharCode> for u32 {
+    #[inline]
+    fn from(value: FourCharCode) -> Self {
+        value.0
+    }
+}
+
+#[cfg(feature = "std")]
+impl From<FourCharCode> for String {
+    #[inline]
+    fn from(value: FourCharCode) -> Self {
+        value.to_string()
+    }
+}
+
+#[doc(hidden)]
+pub mod __private {
+    use core::fmt::Write;
+
+    use super::{FccConversionError, FourCharCode};
+
+    struct FccBuf {
+        buf: [u8; 4],
+        len: usize,
+        err: Option<FccConversionError>,
+    }
+
+    impl FccBuf {
+        #[inline(always)]
+        fn new() -> Self {
+            Self {
+                buf: [0; 4],
+                len: 0,
+                err: None,
+            }
+        }
+    }
+
+    impl core::fmt::Write for FccBuf {
+        fn write_char(&mut self, c: char) -> core::fmt::Result {
+            if !c.is_ascii() || c.is_control() {
+                self.err = Some(FccConversionError::InvalidChar);
+                Err(core::fmt::Error)
+            } else if self.len == 4 {
+                self.err = Some(FccConversionError::TooLong);
+                Err(core::fmt::Error)
+            } else {
+                unsafe { *self.buf.get_unchecked_mut(self.len) = c as u8 };
+                self.len += 1;
+                Ok(())
+            }
+        }
+
+        #[inline]
+        fn write_fmt(mut self: &mut Self, args: core::fmt::Arguments<'_>) -> core::fmt::Result {
+            core::fmt::write(&mut self, args)
+        }
+
+        fn write_str(&mut self, s: &str) -> core::fmt::Result {
+            for c in s.chars() {
+                self.write_char(c)?;
+            }
+            Ok(())
+        }
+    }
+
+    pub fn fcc_format(
+        args: core::fmt::Arguments<'_>,
+    ) -> core::result::Result<FourCharCode, FccConversionError> {
+        let mut buf = FccBuf::new();
+        buf.write_fmt(args).map_err(|_| buf.err.take().unwrap())?;
+        if buf.len != 4 {
+            return Err(FccConversionError::TooShort);
+        }
+        Ok(FourCharCode(u32::from_be_bytes(buf.buf)))
+    }
+}
+
+#[derive(proc_macro_hack::ProcMacroHack)]
+enum _26four_char_code_macros_impl_14four_char_code {
+    Value = (
+        stringify! {
+            #[doc(hidden)]
+            pub use four_char_code_macros_impl::_proc_macro_hack_four_char_code;
+
+            /// Create a checked [FourCharCode] at compile time
+            #[macro_export]
+            macro_rules! four_char_code {
+                ($($proc_macro:tt)*) => {
+                    {
+                        #[derive($crate::_proc_macro_hack_four_char_code)]
+                        #[allow(dead_code)]
+                        enum ProcMacroHack {
+                            Value = (stringify!($($proc_macro)*), 0).1
+                        }
+                        unsafe { $crate::FourCharCode::new_unchecked(proc_macro_call!()) }
+                    }
+                };
+            }
+        },
+        0,
+    )
+        .1,
+}
+
+/// Returns a [FourCharCode] from a `format!` like expression without allocation if valid.
+/// Returns an error describing the problem otherwise.
+#[macro_export]
+macro_rules! fcc_format {
+    ($fmt:expr) => {
+        $crate::__private::fcc_format(core::format_args!($fmt))
+    };
+    ($fmt:expr, $($args:tt)*) => {
+        $crate::__private::fcc_format(core::format_args!($fmt, $($args)*))
+    };
+}
