@@ -15,4 +15,4 @@ four-char-code = { version = "1", default-features = false }
 
 ### MSRV
 
-1.32.0
+1.32.0 (in rust <1.38.0 `fcc_format!` is not supported)

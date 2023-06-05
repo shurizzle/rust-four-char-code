@@ -328,15 +328,16 @@ enum _26four_char_code_macros_impl_14four_char_code {
         .1,
 }
 
+#[cfg(ge_1_38_0)]
 /// Returns a [FourCharCode] from a `format!` like expression without allocation if valid.
 /// Returns an error describing the problem otherwise.
 #[macro_export]
 macro_rules! fcc_format {
     ($fmt:expr) => {
-        $crate::__private::fcc_format(core::format_args!($fmt))
+        $crate::__private::fcc_format(::core::format_args!($fmt))
     };
     ($fmt:expr, $($args:tt)*) => {
-        $crate::__private::fcc_format(core::format_args!($fmt, $($args)*))
+        $crate::__private::fcc_format(::core::format_args!($fmt, $($args)*))
     };
 }
 
@@ -362,6 +363,7 @@ mod tests {
         assert_eq!(ui32.unwrap(), "ui32");
     }
 
+    #[cfg(ge_1_38_0)]
     #[test]
     fn format() {
         let f1mn = fcc_format!("F{}Mn", 1);

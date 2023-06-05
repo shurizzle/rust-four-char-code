@@ -21,6 +21,13 @@ jobs:
         toolchain: 1.32.0
         default: false
         components: rustfmt, clippy
+    - uses: actions/checkout@v3
+    - name: Install 1.38.0 toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: 1.38.0
+        default: false
+        components: rustfmt, clippy
     - name: Install stable toolchain
       uses: actions-rs/toolchain@v1
       with:
@@ -61,6 +68,14 @@ jobs:
       run: |
         rm -rf target Cargo.lock
         cargo +1.32.0 test --verbose --release --no-default-features
+    - name: test 1.38.0 all features
+      run: |
+        rm -rf target Cargo.lock
+        cargo +1.38.0 test --verbose --release --all-features
+    - name: test 1.38.0 no features
+      run: |
+        rm -rf target Cargo.lock
+        cargo +1.38.0 test --verbose --release --no-default-features
     - name: test stable all features
       run: |
         rm -rf target Cargo.lock
