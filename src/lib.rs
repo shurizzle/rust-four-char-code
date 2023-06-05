@@ -239,6 +239,7 @@ impl From<FourCharCode> for String {
 }
 
 #[doc(hidden)]
+#[cfg(ge_1_38_0)]
 pub mod __private {
     use core::fmt::Write;
 
