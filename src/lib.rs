@@ -23,9 +23,9 @@ pub enum FccConversionError {
 impl FccConversionError {
     pub fn description(&self) -> &str {
         match self {
-            Self::TooLong => "four char code is too long",
-            Self::TooShort => "four char code is too short",
-            Self::InvalidChar => "invalid char in four char code",
+            FccConversionError::TooLong => "four char code is too long",
+            FccConversionError::TooShort => "four char code is too short",
+            FccConversionError::InvalidChar => "invalid char in four char code",
         }
     }
 }
