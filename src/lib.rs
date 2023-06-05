@@ -20,6 +20,31 @@ pub enum FccConversionError {
     InvalidChar,
 }
 
+impl FccConversionError {
+    pub fn description(&self) -> &str {
+        match self {
+            Self::TooLong => "four char code is too long",
+            Self::TooShort => "four char code is too short",
+            Self::InvalidChar => "invalid char in four char code",
+        }
+    }
+}
+
+impl fmt::Display for FccConversionError {
+    #[inline]
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(FccConversionError::description(self), f)
+    }
+}
+
+#[cfg(feature = "std")]
+impl ::std::error::Error for FccConversionError {
+    #[inline]
+    fn description(&self) -> &str {
+        FccConversionError::description(self)
+    }
+}
+
 type Result<T> = core::result::Result<T, FccConversionError>;
 
 /// The main structure, actually a u32.
