@@ -27,7 +27,8 @@ jobs:
         toolchain: stable
         default: true
         components: rustfmt, clippy
-    - run: cargo fmt --all -- --check
+    - name: fmt
+      run: cargo fmt --all -- --check
     - name: clippy 1.32.0 all features
       uses: actions-rs/clippy-check@v1
       with:
