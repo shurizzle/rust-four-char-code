@@ -362,4 +362,11 @@ mod tests {
         assert!(ui32.is_ok());
         assert_eq!(ui32.unwrap(), "ui32");
     }
+
+    #[test]
+    fn format() {
+        let f1mn = fcc_format!("F{}Mn", 1);
+        assert!(f1mn.is_ok());
+        assert_eq!(f1mn.unwrap(), "F1Mn");
+    }
 }
