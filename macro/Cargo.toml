@@ -1,12 +1,13 @@
 [package]
 name = "four-char-code-macros-impl"
 description = "Macros for four-char-code package"
-homepage = "https://github.com/shurizzle/rust-four-char-code"
-repository = "https://github.com/shurizzle/rust-four-char-code"
-license-file = "../LICENSE"
+license = "MIT"
 version = "1.0.0"
 authors = ["shurizzle <shura1991@gmail.com>"]
 edition = "2018"
+readme = "../README.md"
+homepage = "https://github.com/shurizzle/rust-four-char-code"
+repository = "https://github.com/shurizzle/rust-four-char-code"
 
 [lib]
 proc-macro = true

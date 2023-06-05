@@ -20,5 +20,5 @@ default = ["std"]
 std = []
 
 [dependencies]
-four-char-code-macros-impl = { path = "macro", version = "1.0.0" }
+four-char-code-macros-impl = { path = "macro", version = "1" }
 proc-macro-hack = "0.5"
