@@ -10,9 +10,11 @@ Enable `#![no_std]` support by disabling the default `std` feature:
 
 ```toml
 [dependencies]
-four-char-code = { version = "1", default-features = false }
+four-char-code = { version = "2", default-features = false }
 ```
 
 ### MSRV
 
-1.32.0 (in rust <1.38.0 `fcc_format!` is not supported)
+1.46.0
+
+For older rust versions take a look at version 1.

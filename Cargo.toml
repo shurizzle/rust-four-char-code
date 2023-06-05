@@ -1,9 +1,6 @@
-[workspace]
-members = ["macro"]
-
 [package]
 name = "four-char-code"
-version = "1.0.0"
+version = "2.0.0"
 edition = "2018"
 description = "A string of 4 ascii chars represented by an u32"
 homepage = "https://github.com/shurizzle/rust-four-char-code"
@@ -13,12 +10,8 @@ authors = ["shurizzle <shura1991@gmail.com>"]
 
 
 [package.metadata]
-msrv = "1.32.0"
+msrv = "1.46.0"
 
 [features]
 default = ["std"]
 std = []
-
-[dependencies]
-four-char-code-macros-impl = { path = "macro", version = "1.0.0" }
-proc-macro-hack = "0.5"
