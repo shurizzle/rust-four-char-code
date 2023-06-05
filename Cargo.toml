@@ -10,7 +10,7 @@ authors = ["shurizzle <shura1991@gmail.com>"]
 
 
 [package.metadata]
-msrv = "1.46.0"
+msrv = "1.57.0"
 
 [features]
 default = ["std"]

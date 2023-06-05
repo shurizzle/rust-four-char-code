@@ -15,6 +15,6 @@ four-char-code = { version = "2", default-features = false }
 
 ### MSRV
 
-1.46.0
+1.57.0
 
 For older rust versions take a look at version 1.
