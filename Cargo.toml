@@ -6,11 +6,11 @@ name = "four-char-code"
 version = "1.0.0"
 edition = "2018"
 description = "A string of 4 ascii chars represented by an u32"
-homepage = "https://github.com/shurizzle/rust-four-char-code"
-repository = "https://github.com/shurizzle/rust-four-char-code"
-license-file = "LICENSE"
+license = "MIT"
+readme = "README.md"
 authors = ["shurizzle <shura1991@gmail.com>"]
-
+homepage = "https://github.com/shurizzle/rust-four-char-code/tree/v1"
+repository = "https://github.com/shurizzle/rust-four-char-code/tree/v1"
 
 [package.metadata]
 msrv = "1.32.0"
