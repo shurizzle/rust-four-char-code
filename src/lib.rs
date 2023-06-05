@@ -45,7 +45,7 @@ fn from_bytes(mut bytes: [u8; 4]) -> Result<FourCharCode> {
             null_streak = false;
         }
 
-        if c <= b'\x1f' || c >= 127 {
+        if c <= b'\x1f' || c >= b'\x7f' {
             return Err(FccConversionError::InvalidChar);
         }
 

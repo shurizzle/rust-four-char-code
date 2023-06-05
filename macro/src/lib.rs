@@ -56,7 +56,7 @@ pub fn four_char_code(input: TokenStream) -> TokenStream {
                 null_streak = false;
             }
 
-            if c <= b'\x1f' || c >= 127 {
+            if c <= b'\x1f' || c >= b'\x7f' {
                 return syn::Error::new_spanned(input, "invalid char in four char code")
                     .into_compile_error()
                     .into();
