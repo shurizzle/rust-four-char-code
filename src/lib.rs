@@ -118,6 +118,94 @@ impl PartialOrd<u32> for FourCharCode {
     }
 }
 
+impl PartialEq<str> for FourCharCode {
+    fn eq(&self, other: &str) -> bool {
+        if let Ok(other) = Self::from_str(other) {
+            *self == other
+        } else {
+            false
+        }
+    }
+}
+
+impl PartialEq<&str> for FourCharCode {
+    #[inline]
+    fn eq(&self, other: &&str) -> bool {
+        self.eq(*other)
+    }
+}
+
+impl PartialOrd<str> for FourCharCode {
+    fn partial_cmp(&self, other: &str) -> Option<Ordering> {
+        if let Ok(other) = Self::from_str(other) {
+            self.partial_cmp(&other)
+        } else {
+            None
+        }
+    }
+}
+
+impl PartialOrd<&str> for FourCharCode {
+    #[inline]
+    fn partial_cmp(&self, other: &&str) -> Option<Ordering> {
+        self.partial_cmp(*other)
+    }
+}
+
+impl PartialEq<[u8]> for FourCharCode {
+    fn eq(&self, other: &[u8]) -> bool {
+        if let Ok(other) = Self::from_slice(other) {
+            *self == other
+        } else {
+            false
+        }
+    }
+}
+
+impl PartialEq<&[u8]> for FourCharCode {
+    #[inline]
+    fn eq(&self, other: &&[u8]) -> bool {
+        self.eq(*other)
+    }
+}
+
+impl PartialOrd<[u8]> for FourCharCode {
+    fn partial_cmp(&self, other: &[u8]) -> Option<Ordering> {
+        if let Ok(other) = Self::from_slice(other) {
+            self.partial_cmp(&other)
+        } else {
+            None
+        }
+    }
+}
+
+impl PartialOrd<&[u8]> for FourCharCode {
+    #[inline]
+    fn partial_cmp(&self, other: &&[u8]) -> Option<Ordering> {
+        self.partial_cmp(*other)
+    }
+}
+
+impl PartialEq<[u8; 4]> for FourCharCode {
+    fn eq(&self, other: &[u8; 4]) -> bool {
+        if let Ok(other) = Self::from_array(*other) {
+            *self == other
+        } else {
+            false
+        }
+    }
+}
+
+impl PartialOrd<[u8; 4]> for FourCharCode {
+    fn partial_cmp(&self, other: &[u8; 4]) -> Option<Ordering> {
+        if let Ok(other) = Self::from_array(*other) {
+            self.partial_cmp(&other)
+        } else {
+            None
+        }
+    }
+}
+
 impl fmt::Debug for FourCharCode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let be = self.0.to_be_bytes();
