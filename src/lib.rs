@@ -128,6 +128,13 @@ impl FourCharCode {
     }
 }
 
+impl Default for FourCharCode {
+    #[inline]
+    fn default() -> Self {
+        four_char_code!("    ")
+    }
+}
+
 impl PartialEq<u32> for FourCharCode {
     #[inline]
     fn eq(&self, other: &u32) -> bool {
