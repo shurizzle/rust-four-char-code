@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: test
+    environment: master
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install 1.46.0 toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: 1.46.0
+        default: false
+        components: rustfmt, clippy
+    - name: Install stable toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        default: true
+        components: rustfmt, clippy
+    - name: fmt
+      run: cargo fmt --all -- --check
+    - name: clippy 1.46.0 all features
+      uses: actions-rs/clippy-check@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        toolchain: 1.46.0
+        args: --release -vv --all-features
+    - name: clippy 1.46.0 no features
+      uses: actions-rs/clippy-check@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        toolchain: 1.46.0
+        args: --release -vv --no-default-features
+    - name: clippy stable all features
+      uses: actions-rs/clippy-check@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        toolchain: stable
+        args: --release -vv --all-features
+    - name: clippy stable no features
+      uses: actions-rs/clippy-check@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        toolchain: stable
+        args: --release -vv --no-default-features
+    - name: test 1.46.0 all features
+      run: |
+        rm -rf target Cargo.lock
+        cargo +1.46.0 test --verbose --release --all-features
+    - name: test 1.46.0 no features
+      run: |
+        rm -rf target Cargo.lock
+        cargo +1.46.0 test --verbose --release --no-default-features
+    - name: test stable all features
+      run: |
+        rm -rf target Cargo.lock
+        cargo +stable test --verbose --release --all-features
+    - name: test stable no features
+      run: |
+        rm -rf target Cargo.lock
+        cargo +stable test --verbose --release --no-default-features
+
