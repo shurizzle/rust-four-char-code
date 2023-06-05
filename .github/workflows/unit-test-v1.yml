@@ -1,16 +1,18 @@
-name: CI
+name: CIv1
 
 on:
   push:
     branches:
-      - master
+      - v1
   pull_request:
+    branches:
+      - v1
   workflow_dispatch:
 
 jobs:
   test:
     name: test
-    environment: master
+    environment: v1
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
