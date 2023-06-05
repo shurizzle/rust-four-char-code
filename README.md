@@ -4,6 +4,15 @@
 
 *Widipedia*
 
+### #![no_std]
+
+Enable `#![no_std]` support by disabling the default `std` feature:
+
+```toml
+[dependencies]
+four-char-code = { version = "1", default-features = false }
+```
+
 ### MSRV
 
 1.32.0
