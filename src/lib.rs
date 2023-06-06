@@ -52,6 +52,10 @@ type Result<T> = core::result::Result<T, FccConversionError>;
 #[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Hash)]
 pub struct FourCharCode(u32);
 
+/// Helper struct to safely print [FourCharCode] with `format!`.
+#[repr(transparent)]
+pub struct Display(u32);
+
 fn from_bytes(mut bytes: [u8; 4]) -> Result<FourCharCode> {
     let mut null_streak = true;
 
@@ -152,6 +156,13 @@ impl FourCharCode {
     /// Substitute leading zeroes with spaces (padding with space).
     pub fn normalize(&mut self) {
         self.0 = normalize(self.0);
+    }
+
+    /// Returns an object that implements [core::fmt::Display] for safely printing
+    /// fourcc's that may contain non-ASCII characters.
+    #[allow(clippy::trivially_copy_pass_by_ref)]
+    pub fn display(&self) -> Display {
+        Display(u32::from_be(normalize(self.0)))
     }
 }
 
@@ -294,6 +305,24 @@ impl From<FourCharCode> for String {
     #[inline]
     fn from(value: FourCharCode) -> Self {
         value.to_string()
+    }
+}
+
+impl fmt::Display for Display {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let chars = unsafe { core::slice::from_raw_parts((&self.0 as *const u32) as *const u8, 4) };
+        for &c in chars {
+            let c = if c <= b'\x1f' || c >= b'\x7f' {
+                '�'
+            } else {
+                #[allow(clippy::transmute_int_to_char)]
+                unsafe {
+                    core::mem::transmute::<u32, char>(u32::from(c))
+                }
+            };
+            fmt::Display::fmt(&c, f)?;
+        }
+        Ok(())
     }
 }
 
