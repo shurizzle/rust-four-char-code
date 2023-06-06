@@ -82,6 +82,28 @@ fn from_bytes(mut bytes: [u8; 4]) -> Result<FourCharCode> {
     Ok(FourCharCode(u32::from_be_bytes(bytes)))
 }
 
+fn normalize(value: u32) -> u32 {
+    let mut bytes = u32::to_be_bytes(value);
+
+    let mut i = 3usize;
+    loop {
+        let c = bytes[i];
+
+        if c == 0 {
+            bytes[i] = 0x20;
+        } else {
+            return u32::from_be_bytes(bytes);
+        }
+
+        if i == 0 {
+            break;
+        }
+        i -= 1;
+    }
+
+    u32::from_be_bytes(bytes)
+}
+
 impl FourCharCode {
     /// Returns a [FourCharCode] if value is valid, an error describing the problem otherwise.
     #[inline]
@@ -125,6 +147,11 @@ impl FourCharCode {
     #[allow(clippy::should_implement_trait)]
     pub fn from_str(value: &str) -> Result<Self> {
         Self::from_slice(value.as_bytes())
+    }
+
+    /// Substitute leading zeroes with spaces (padding with space).
+    pub fn normalize(&mut self) {
+        self.0 = normalize(self.0);
     }
 }
 
