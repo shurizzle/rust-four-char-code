@@ -3,7 +3,7 @@ members = ["macro"]
 
 [package]
 name = "four-char-code"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2018"
 description = "A string of 4 ascii chars represented by an u32"
 license = "MIT"
