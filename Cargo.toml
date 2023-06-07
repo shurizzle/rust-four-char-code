@@ -1,6 +1,6 @@
 [package]
 name = "four-char-code"
-version = "2.0.2"
+version = "2.1.0"
 edition = "2018"
 description = "A string of 4 ascii chars represented by an u32"
 license = "MIT"
