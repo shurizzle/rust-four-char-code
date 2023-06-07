@@ -4,7 +4,10 @@
 extern crate four_char_code_macros_impl;
 extern crate proc_macro_hack;
 
-use core::{cmp::Ordering, fmt};
+use core::{
+    cmp::Ordering,
+    fmt::{self, Write},
+};
 
 #[cfg(feature = "std")]
 use std::string::{String, ToString};
@@ -277,9 +280,8 @@ impl PartialOrd<[u8; 4]> for FourCharCode {
 
 impl fmt::Debug for FourCharCode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let be = self.0.to_be_bytes();
         f.debug_tuple("FourCharCode")
-            .field(&unsafe { core::str::from_utf8_unchecked(&be[..]) })
+            .field(&self.display())
             .finish()
     }
 }
@@ -323,6 +325,24 @@ impl fmt::Display for Display {
             fmt::Display::fmt(&c, f)?;
         }
         Ok(())
+    }
+}
+
+impl fmt::Debug for Display {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let chars = unsafe { core::slice::from_raw_parts((&self.0 as *const u32) as *const u8, 4) };
+        f.write_char('"')?;
+        for &c in chars {
+            if c <= b'\x1f' || c >= b'\x7f' {
+                f.write_char('�')
+            } else if c == b'"' {
+                f.write_str("\\\"")
+            } else {
+                #[allow(clippy::transmute_int_to_char)]
+                f.write_char(unsafe { core::mem::transmute::<u32, char>(u32::from(c)) })
+            }?;
+        }
+        f.write_char('"')
     }
 }
 
