@@ -167,6 +167,12 @@ impl FourCharCode {
     pub fn display(&self) -> Display {
         Display(u32::from_be(normalize(self.0)))
     }
+
+    /// Returns the underlying `u32` this [FourCharCode] represents
+    #[inline]
+    pub const fn as_u32(&self) -> u32 {
+        self.0
+    }
 }
 
 impl Default for FourCharCode {
