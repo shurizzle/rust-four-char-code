@@ -7,6 +7,7 @@ pub struct Version {
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo::rustc-check-cfg=cfg(ge_1_38_0)");
 
     let rustc = std::env::var_os("RUSTC").unwrap_or_else(|| OsString::from("rustc"));
     let mut is_clippy_driver = false;

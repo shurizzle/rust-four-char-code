@@ -65,18 +65,14 @@ fn from_bytes(mut bytes: [u8; 4]) -> Result<FourCharCode> {
     let mut i = 3usize;
     loop {
         let mut c = bytes[i];
-        if c == 0 {
-            if null_streak {
-                c = 0x20;
-                bytes[i] = c;
-            } else {
-                return Err(FccConversionError::InvalidChar);
-            }
+        if c == 0 && null_streak {
+            c = 0x20;
+            bytes[i] = c;
         } else {
             null_streak = false;
         }
 
-        if c <= b'\x1f' || c >= b'\x7f' {
+        if c > b'\x7f' {
             return Err(FccConversionError::InvalidChar);
         }
 
@@ -293,6 +289,7 @@ impl fmt::Debug for FourCharCode {
 }
 
 #[cfg(feature = "std")]
+#[allow(clippy::to_string_trait_impl)]
 impl ToString for FourCharCode {
     #[inline]
     fn to_string(&self) -> String {
@@ -464,10 +461,10 @@ mod tests {
 
     #[test]
     fn invalid() {
-        assert!(FourCharCode::new(1).is_err());
+        assert!(FourCharCode::new(128).is_err());
         assert!(FourCharCode::from_str("").is_err());
         assert!(FourCharCode::from_str("test1").is_err());
-        assert!(FourCharCode::from_str("\x7f___").is_err());
+        assert!(FourCharCode::from_slice(b"\x80___").is_err());
     }
 
     #[test]
@@ -476,6 +473,9 @@ mod tests {
         let ui32 = FourCharCode::from_str("ui32");
         assert!(ui32.is_ok());
         assert_eq!(ui32.unwrap(), "ui32");
+        let zigr = FourCharCode::from_str("\0igr");
+        assert!(zigr.is_ok());
+        assert_eq!(zigr.unwrap(), "\0igr");
     }
 
     #[cfg(ge_1_38_0)]

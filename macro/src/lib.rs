@@ -43,20 +43,14 @@ pub fn four_char_code(input: TokenStream) -> TokenStream {
         let mut i = 3usize;
         loop {
             let mut c = bytes[i];
-            if c == 0 {
-                if null_streak {
-                    c = 0x20;
-                    bytes[i] = c;
-                } else {
-                    return syn::Error::new_spanned(input, "invalid char in four char code")
-                        .into_compile_error()
-                        .into();
-                }
+            if c == 0 && null_streak {
+                c = 0x20;
+                bytes[i] = c;
             } else {
                 null_streak = false;
             }
 
-            if c <= b'\x1f' || c >= b'\x7f' {
+            if c > b'\x7f' {
                 return syn::Error::new_spanned(input, "invalid char in four char code")
                     .into_compile_error()
                     .into();
